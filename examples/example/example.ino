@@ -1,6 +1,6 @@
 #include <openag_am2315.h>
-
-Am2315 am2315_1("am2315_1");
+String parameters[] = {};
+Am2315 am2315_1("am2315_1", parameters);
 
 void setup() {
   Serial.begin(9600);

@@ -1,20 +1,20 @@
-/** 
+/**
  *  \file openag_am2315.h
  *  \brief Air temperature and air humidity sensor.
  */
-/*************************************************** 
+/***************************************************
   This is a library for the AM2315 Humidity Pressure & Temp Sensor
 
   Designed specifically to work with the AM2315 sensor from Adafruit
   ----> https://www.adafruit.com/products/1293
 
-  These displays use I2C to communicate, 2 pins are required to  
+  These displays use I2C to communicate, 2 pins are required to
   interface
-  Adafruit invests time and resources providing this open source code, 
-  please support Adafruit and open-source hardware by purchasing 
+  Adafruit invests time and resources providing this open source code,
+  please support Adafruit and open-source hardware by purchasing
   products from Adafruit!
 
-  Written by Limor Fried/Ladyada for Adafruit Industries.  
+  Written by Limor Fried/Ladyada for Adafruit Industries.
   BSD license, all text above must be included in any redistribution
  ****************************************************/
 #ifndef OPENAG_AM2315
@@ -49,7 +49,7 @@ class Am2315 : public Peripheral {
   float air_humidity;
 
   // Public methods
-  Am2315(String id); // constructor
+  Am2315(String id, String* parameters); // constructor
   ~Am2315(); // desctructor
   void begin();
   String get(String key);

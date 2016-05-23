@@ -21,7 +21,7 @@
  ****************************************************/
 #include "openag_am2315.h"
 
-Am2315::Am2315(String id) : Peripheral(id) {}
+Am2315::Am2315(String id, String* parameters) : Peripheral(id, parameters) {}
 
 Am2315::~Am2315() {}
 
