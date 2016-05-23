@@ -33,12 +33,6 @@
 #include <Wire.h>
 #include <openag_peripheral.h>
 
-#define I2C_ADDRESS          0x5C
-#define READ_REGISTER        0x03
-#define MIN_UPDATE_INTERVAL  2000 // milliseconds
-#define AIR_TEMPERATURE_KEY  "air_temperature"
-#define AIR_HUMIDITY_KEY     "air_humidity"
-
 /**
  * \brief Air temperature and air humidity sensor.
  */
@@ -60,6 +54,11 @@ class Am2315 : public Peripheral {
   uint32_t _time_of_last_reading;
   String _air_temperature_message;
   String _air_humidity_message;
+  const static uint32_t _min_update_interval = 2000;
+  String _air_temperature_key;
+  String _air_humidity_key;
+  const static int _i2c_address = 0x5c;
+  const static int _read_register = 0x03;
 
   // Private functions
   void readData();

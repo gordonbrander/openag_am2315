@@ -28,28 +28,30 @@ Am2315::~Am2315() {}
 void Am2315::begin() {
   Wire.begin(); // enable i2c port
   _time_of_last_reading = 0;
-  _air_temperature_message = String(AIR_TEMPERATURE_KEY) + ":error";
-  _air_humidity_message = String(AIR_HUMIDITY_KEY) + ":error";
+  _air_temperature_key = "air_temperature";
+  _air_humidity_key = "air_humidity";
+  _air_temperature_message = _air_temperature_key + ",error";
+  _air_humidity_message = _air_humidity_key + ",error";
 }
 
 String Am2315::get(String key) {
-  if (key == AIR_TEMPERATURE_KEY) {
+  if (key == _air_temperature_key) {
     return getAirTemperature();
   }
-  else if (key == AIR_HUMIDITY_KEY) {
+  else if (key == _air_humidity_key) {
     return getAirHumidity();
   }
   else {
-    return String(key + ":error");
+    return String(key + ",error");
   }
 }
 
 String Am2315::set(String key, String value) {
-  return String(key + ":error");
+  return String(key + ",error");
 }
 
 String Am2315::getAirTemperature() {
-  if (millis() - _time_of_last_reading > MIN_UPDATE_INTERVAL){ // can only read sensor so often
+  if (millis() - _time_of_last_reading > _min_update_interval){ // can only read sensor so often
     readData();
     _time_of_last_reading = millis();
   }
@@ -57,7 +59,7 @@ String Am2315::getAirTemperature() {
 }
 
 String Am2315::getAirHumidity() {
-  if (millis() - _time_of_last_reading > MIN_UPDATE_INTERVAL) { // can only read sensor so often
+  if (millis() - _time_of_last_reading > _min_update_interval) { // can only read sensor so often
     readData();
     _time_of_last_reading = millis();
   }
@@ -69,13 +71,13 @@ void Am2315::readData() {
   boolean is_good_reading = true;
 
   // Wake up sensor
-  Wire.beginTransmission(I2C_ADDRESS);
+  Wire.beginTransmission(_i2c_address);
   delay(2);
   Wire.endTransmission();
 
   // Send request to sensor
-  Wire.beginTransmission(I2C_ADDRESS);
-  Wire.write(READ_REGISTER);
+  Wire.beginTransmission(_i2c_address);
+  Wire.write(_read_register);
   Wire.write(0x00);  // start at address 0x0
   Wire.write(4);  // request 4 bytes data
   Wire.endTransmission();
@@ -84,13 +86,13 @@ void Am2315::readData() {
   delay(10);
 
   // Read sensor
-  Wire.requestFrom(I2C_ADDRESS, 8);
+  Wire.requestFrom(_i2c_address, 8);
   for (uint8_t i=0; i<8; i++) {
     reply[i] = Wire.read();
   }
 
   // Check for failure
-  if (reply[0] != READ_REGISTER) {
+  if (reply[0] != _read_register) {
     is_good_reading = false;
   }
   else if (reply[1] != 4) {
@@ -113,12 +115,12 @@ void Am2315::readData() {
 
   // Update messages
   if (is_good_reading) {
-    _air_humidity_message = id + "," + String(AIR_HUMIDITY_KEY) + "," + String(air_humidity, 1);
-    _air_temperature_message = id + "," + String(AIR_TEMPERATURE_KEY) + "," + String(air_temperature, 1);
+    _air_humidity_message = id + "," + _air_humidity_key + "," + String(air_humidity, 1);
+    _air_temperature_message = id + "," + _air_temperature_key + "," + String(air_temperature, 1);
 
   }
   else { // read failure
-    _air_humidity_message = id + "," + String(AIR_HUMIDITY_KEY) + ",error";
-    _air_temperature_message = id + "," + String(AIR_TEMPERATURE_KEY) + ",error";
+    _air_humidity_message = id + "," + _air_humidity_key + ",error";
+    _air_temperature_message = id + "," + _air_temperature_key + ",error";
   }
 }
