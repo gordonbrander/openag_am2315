@@ -7,5 +7,10 @@
         "url": "https://github.com/OpenAgInitiative/openag_am2315.git"
     },
     "frameworks": "arduino",
-    "platforms": "*"
+    "platforms": "*",
+    "dependencies": [
+        {
+            "name": "openag_peripheral"
+        }
+    ]
 }
