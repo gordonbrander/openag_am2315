@@ -16,6 +16,8 @@
 
   Written by Limor Fried/Ladyada for Adafruit Industries.
   BSD license, all text above must be included in any redistribution
+
+  Modified for OpenAg
  ****************************************************/
 #ifndef OPENAG_AM2315
 #define OPENAG_AM2315
@@ -31,39 +33,34 @@
 #endif
 
 #include <Wire.h>
-#include <openag_peripheral.h>
+#include <std_msgs/Float32.h>
 
 /**
  * \brief Air temperature and air humidity sensor.
  */
-class Am2315 : public Peripheral {
+class Am2315 {
  public:
-  // Public variables
-  float air_temperature;
-  float air_humidity;
-
   // Public methods
-  Am2315(String id, String* parameters); // constructor
-  ~Am2315(); // desctructor
   void begin();
-  String get(String key);
-  String set (String key, String value);
+  bool get_air_temperature(std_msgs::Float32 &msg);
+  bool get_air_humidity(std_msgs::Float32 &msg);
+  bool has_error;
+  char* error_msg;
 
  private:
   // Private variables
+  float _air_temperature;
+  float _air_humidity;
   uint32_t _time_of_last_reading;
-  String _air_temperature_message;
-  String _air_humidity_message;
+  bool _send_air_temperature;
+  bool _send_air_humidity;
   const static uint32_t _min_update_interval = 2000;
-  String _air_temperature_key;
-  String _air_humidity_key;
   const static int _i2c_address = 0x5c;
   const static int _read_register = 0x03;
 
   // Private functions
+  void update();
   void readData();
-  String getAirTemperature();
-  String getAirHumidity();
 };
 
 #endif

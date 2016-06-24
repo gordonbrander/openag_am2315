@@ -21,54 +21,37 @@
  ****************************************************/
 #include "openag_am2315.h"
 
-Am2315::Am2315(String id, String* parameters) : Peripheral(id, parameters) {}
-
-Am2315::~Am2315() {}
-
 void Am2315::begin() {
   Wire.begin(); // enable i2c port
   _time_of_last_reading = 0;
-  _air_temperature_key = "air_temperature";
-  _air_humidity_key = "air_humidity";
-  _air_temperature_message = _air_temperature_key + ",error";
-  _air_humidity_message = _air_humidity_key + ",error";
 }
 
-String Am2315::get(String key) {
-  if (key == _air_temperature_key) {
-    return getAirTemperature();
-  }
-  else if (key == _air_humidity_key) {
-    return getAirHumidity();
-  }
-  else {
-    return String(key + ",error");
-  }
+bool Am2315::get_air_temperature(std_msgs::Float32 &msg) {
+  update();
+  msg.data = _air_temperature;
+  bool res = _send_air_temperature;
+  _send_air_temperature = false;
+  return res;
 }
 
-String Am2315::set(String key, String value) {
-  return String(key + ",error");
+bool Am2315::get_air_humidity(std_msgs::Float32 & msg) {
+  update();
+  msg.data = _air_humidity;
+  bool res = _send_air_humidity;
+  _send_air_humidity = false;
+  return res;
 }
 
-String Am2315::getAirTemperature() {
-  if (millis() - _time_of_last_reading > _min_update_interval){ // can only read sensor so often
-    readData();
-    _time_of_last_reading = millis();
+void Am2315::update() {
+  if (millis() - _time_of_last_reading > _min_update_interval) {
+      readData();
+      _time_of_last_reading = millis();
   }
-  return _air_temperature_message;
-}
-
-String Am2315::getAirHumidity() {
-  if (millis() - _time_of_last_reading > _min_update_interval) { // can only read sensor so often
-    readData();
-    _time_of_last_reading = millis();
-  }
-  return _air_humidity_message;
 }
 
 void Am2315::readData() {
-  uint8_t reply[10];
-  boolean is_good_reading = true;
+  uint8_t reply[8];
+  bool is_good_reading = true;
 
   // Wake up sensor
   Wire.beginTransmission(_i2c_address);
@@ -100,27 +83,26 @@ void Am2315::readData() {
   }
   else { // good reading
     // Process air humidity
-    air_humidity = reply[2];
-    air_humidity *= 256;
-    air_humidity += reply[3];
-    air_humidity /= 10;
+    _air_humidity = reply[2];
+    _air_humidity *= 256;
+    _air_humidity += reply[3];
+    _air_humidity /= 10;
 
     // Process air temperature
-    air_temperature = reply[4] & 0x7F;
-    air_temperature *= 256;
-    air_temperature += reply[5];
-    air_temperature /= 10;
-    if (reply[4] >> 7) air_temperature = -air_temperature;
+    _air_temperature = reply[4] & 0x7F;
+    _air_temperature *= 256;
+    _air_temperature += reply[5];
+    _air_temperature /= 10;
+    if (reply[4] >> 7) _air_temperature = -_air_temperature;
   }
 
-  // Update messages
+  is_good_reading = false;
   if (is_good_reading) {
-    _air_humidity_message = id + "," + _air_humidity_key + "," + String(air_humidity, 1);
-    _air_temperature_message = id + "," + _air_temperature_key + "," + String(air_temperature, 1);
-
+    _send_air_temperature = true;
+    _send_air_humidity = true;
   }
-  else { // read failure
-    _air_humidity_message = id + "," + _air_humidity_key + ",error";
-    _air_temperature_message = id + "," + _air_temperature_key + ",error";
+  else {
+    has_error = true;
+    error_msg = "Failed to read";
   }
 }
