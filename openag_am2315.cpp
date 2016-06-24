@@ -96,7 +96,6 @@ void Am2315::readData() {
     if (reply[4] >> 7) _air_temperature = -_air_temperature;
   }
 
-  is_good_reading = false;
   if (is_good_reading) {
     _send_air_temperature = true;
     _send_air_humidity = true;

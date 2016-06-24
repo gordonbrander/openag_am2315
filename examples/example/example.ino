@@ -12,9 +12,11 @@ std_msgs::Float32 air_humidity;
 
 void loop() {
   if (am2315.get_air_temperature(air_temp)) {
+    Serial.print("Air Temperature: ");
     Serial.println(air_temp.data);
   }
   if (am2315.get_air_humidity(air_humidity)) {
+    Serial.print("Air Humidity: ");
     Serial.println(air_humidity.data);
   }
   if (am2315.has_error) {
