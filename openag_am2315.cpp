@@ -24,6 +24,9 @@
 void Am2315::begin() {
   Wire.begin(); // enable i2c port
   _time_of_last_reading = 0;
+  _send_air_temperature = false;
+  _send_air_humidity = false;
+  error_msg = "Read failure";
 }
 
 bool Am2315::get_air_temperature(std_msgs::Float32 &msg) {
@@ -51,7 +54,6 @@ void Am2315::update() {
 
 void Am2315::readData() {
   uint8_t reply[8];
-  bool is_good_reading = true;
 
   // Wake up sensor
   Wire.beginTransmission(_i2c_address);
@@ -76,10 +78,10 @@ void Am2315::readData() {
 
   // Check for failure
   if (reply[0] != _read_register) {
-    is_good_reading = false;
+    has_error = true;
   }
   else if (reply[1] != 4) {
-    is_good_reading = false;
+    has_error = true;
   }
   else { // good reading
     // Process air humidity
@@ -96,12 +98,8 @@ void Am2315::readData() {
     if (reply[4] >> 7) _air_temperature = -_air_temperature;
   }
 
-  if (is_good_reading) {
+  if (!has_error) {
     _send_air_temperature = true;
     _send_air_humidity = true;
-  }
-  else {
-    has_error = true;
-    error_msg = "Failed to read";
   }
 }

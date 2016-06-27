@@ -20,7 +20,7 @@ void loop() {
     Serial.println(air_humidity.data);
   }
   if (am2315.has_error) {
-    Serial.print("am2315:");
+    Serial.print("Error:");
     Serial.println(am2315.error_msg);
     am2315.has_error = false;
   }

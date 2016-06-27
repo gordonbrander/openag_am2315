@@ -22,7 +22,7 @@
 #ifndef OPENAG_AM2315
 #define OPENAG_AM2315
 
-#if (ARDUINO >= 100)
+#if defined(ARDUINO) && (ARDUINO >= 100)
  #include "Arduino.h"
 #else
  #include "WProgram.h"
@@ -39,28 +39,30 @@
  * \brief Air temperature and air humidity sensor.
  */
 class Am2315 {
- public:
-  // Public methods
-  void begin();
-  bool get_air_temperature(std_msgs::Float32 &msg);
-  bool get_air_humidity(std_msgs::Float32 &msg);
-  bool has_error;
-  char* error_msg;
+  public:
+    // Public variables
+    bool has_error;
+    char* error_msg;
 
- private:
-  // Private variables
-  float _air_temperature;
-  float _air_humidity;
-  uint32_t _time_of_last_reading;
-  bool _send_air_temperature;
-  bool _send_air_humidity;
-  const static uint32_t _min_update_interval = 2000;
-  const static int _i2c_address = 0x5c;
-  const static int _read_register = 0x03;
+    // Public methods
+    void begin();
+    bool get_air_temperature(std_msgs::Float32 &msg);
+    bool get_air_humidity(std_msgs::Float32 &msg);
 
-  // Private functions
-  void update();
-  void readData();
+  private:
+    // Private variables
+    float _air_temperature;
+    float _air_humidity;
+    uint32_t _time_of_last_reading;
+    bool _send_air_temperature;
+    bool _send_air_humidity;
+    const static uint32_t _min_update_interval = 2000;
+    const static int _i2c_address = 0x5c;
+    const static int _read_register = 0x03;
+
+    // Private methods
+    void update();
+    void readData();
 };
 
 #endif
