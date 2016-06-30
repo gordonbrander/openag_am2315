@@ -46,6 +46,7 @@ class Am2315 {
 
     // Public methods
     void begin();
+    void update();
     bool get_air_temperature(std_msgs::Float32 &msg);
     bool get_air_humidity(std_msgs::Float32 &msg);
 
@@ -53,15 +54,14 @@ class Am2315 {
     // Private variables
     float _air_temperature;
     float _air_humidity;
-    uint32_t _time_of_last_reading;
     bool _send_air_temperature;
     bool _send_air_humidity;
+    uint32_t _time_of_last_reading;
     const static uint32_t _min_update_interval = 2000;
     const static int _i2c_address = 0x5c;
     const static int _read_register = 0x03;
 
     // Private methods
-    void update();
     void readData();
 };
 

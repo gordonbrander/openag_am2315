@@ -11,6 +11,8 @@ std_msgs::Float32 air_temp;
 std_msgs::Float32 air_humidity;
 
 void loop() {
+  am2315.update();
+
   if (am2315.get_air_temperature(air_temp)) {
     Serial.print("Air Temperature: ");
     Serial.println(air_temp.data);

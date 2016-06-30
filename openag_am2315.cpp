@@ -23,26 +23,11 @@
 
 void Am2315::begin() {
   Wire.begin(); // enable i2c port
-  _time_of_last_reading = 0;
-  _send_air_temperature = false;
-  _send_air_humidity = false;
+  has_error = false;
   error_msg = "Read failure";
-}
-
-bool Am2315::get_air_temperature(std_msgs::Float32 &msg) {
-  update();
-  msg.data = _air_temperature;
-  bool res = _send_air_temperature;
   _send_air_temperature = false;
-  return res;
-}
-
-bool Am2315::get_air_humidity(std_msgs::Float32 & msg) {
-  update();
-  msg.data = _air_humidity;
-  bool res = _send_air_humidity;
   _send_air_humidity = false;
-  return res;
+  _time_of_last_reading = 0;
 }
 
 void Am2315::update() {
@@ -50,6 +35,20 @@ void Am2315::update() {
       readData();
       _time_of_last_reading = millis();
   }
+}
+
+bool Am2315::get_air_temperature(std_msgs::Float32 &msg) {
+  msg.data = _air_temperature;
+  bool res = _send_air_temperature;
+  _send_air_temperature = false;
+  return res;
+}
+
+bool Am2315::get_air_humidity(std_msgs::Float32 & msg) {
+  msg.data = _air_humidity;
+  bool res = _send_air_humidity;
+  _send_air_humidity = false;
+  return res;
 }
 
 void Am2315::readData() {
