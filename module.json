@@ -1,0 +1,14 @@
+{
+    "pio_id": 336,
+    "description": "Driver for the AdaFruit Am2315 sensor",
+    "class_name": "Am2315",
+    "header_file": "openag_am2315.h",
+    "outputs": {
+        "air_temperature": {
+            "type": "std_msgs/Float32"
+        },
+        "air_humidity": {
+            "type": "std_msgs/Float32"
+        }
+    }
+}

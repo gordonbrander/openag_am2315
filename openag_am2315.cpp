@@ -23,8 +23,8 @@
 
 void Am2315::begin() {
   Wire.begin(); // enable i2c port
-  has_error = false;
-  error_msg = "Read failure";
+  status_level = OK;
+  status_msg = "";
   _send_air_temperature = false;
   _send_air_humidity = false;
   _time_of_last_reading = 0;
@@ -76,11 +76,15 @@ void Am2315::readData() {
   }
 
   // Check for failure
+  status_level = OK;
+  status_msg = "";
   if (reply[0] != _read_register) {
-    has_error = true;
+    status_level = ERROR;
+    status_msg = "Sensor responded with the wrong function code";
   }
   else if (reply[1] != 4) {
-    has_error = true;
+    status_level = ERROR;
+    status_msg = "Sensor did not return enough information";
   }
   else { // good reading
     // Process air humidity
@@ -97,7 +101,7 @@ void Am2315::readData() {
     if (reply[4] >> 7) _air_temperature = -_air_temperature;
   }
 
-  if (!has_error) {
+  if (status_level == OK) {
     _send_air_temperature = true;
     _send_air_humidity = true;
   }

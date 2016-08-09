@@ -33,18 +33,14 @@
 #endif
 
 #include <Wire.h>
+#include <openag_module.h>
 #include <std_msgs/Float32.h>
 
 /**
  * \brief Air temperature and air humidity sensor.
  */
-class Am2315 {
+class Am2315 : public Module {
   public:
-    // Public variables
-    bool has_error;
-    char* error_msg;
-
-    // Public methods
     void begin();
     void update();
     bool get_air_temperature(std_msgs::Float32 &msg);
