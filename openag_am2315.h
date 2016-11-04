@@ -36,6 +36,9 @@
 #include <openag_module.h>
 #include <std_msgs/Float32.h>
 
+static const uint8_t CODE_ERROR_WRONG_FN = 31;
+static const uint8_t CODE_ERROR_NOT_ENOUGH_INFO = 32;
+
 /**
  * \brief Air temperature and air humidity sensor.
  */
