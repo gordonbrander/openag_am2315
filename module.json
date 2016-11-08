@@ -11,7 +11,7 @@
         }
     },
     "dependencies": [
-        {"type": "git", "url": "https://github.com/OpenAgInitiative/openag_firmware_module.git"}
+        {"type": "git", "url": "https://github.com/gordonbrander/openag_firmware_module.git"}
     ],
     "status_code": {
         "31": "Sensor responded with the wrong function code",
